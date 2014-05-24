@@ -3,10 +3,23 @@
  
 ###### Download (any) track on soundcloud
 
-*   [How to use?](#how-to-use "How to use?")
+*   [Gui](#gui "Gui")
+*   [Cli](#cli "Cli")
+*   [Versions](#versions "Versions")
 *   [Contact](#contact-me "Contact")
 
-### How to use? ###
+### Gui ###
+
+```bach
+$ python gui/sources/py-soundcloud.py
+```
+
+![Icon](http://oi57.tinypic.com/11t0d92.jpg)
+
+1.  Add url soundcloud music you want to download
+2.  Wait and enjoy
+
+### Cli ###
 
 ```bach
 $ python py-soundcloud.py
@@ -16,6 +29,11 @@ $ python py-soundcloud.py
 
 1.  Add url soundcloud music you want to download
 2.  Wait and enjoy
+
+### Versions ###
+
+2.0 Add gui interface
+1.0 Add first commit 
 
 ### Contact ###
 
