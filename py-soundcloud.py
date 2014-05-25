@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 import pycurl
 import cStringIO
 import urllib2
@@ -7,69 +5,58 @@ import re
 import time
 import urlparse 
 from urlparse import urlparse
-
+import sys
 
 def getMp3( str ):
- 
-   resp = urllib2.urlopen(str)
-   page = resp.read()
-   resp.close()
-   ret = re.findall(r'("streamUrl":[^\s]+)', page)
-   ret = ret[0][48:60]
-   lst = ['http://media.soundcloud.com/stream/', ret, '?stream_token=own3d']
-   finalurl = "".join(lst)
- 
-   return finalurl;
+   ret = re.findall(r'("streamUrl":[^\s]+)',  urllib2.urlopen(str).read())[0][48:60]
+   return "".join(['http://media.soundcloud.com/stream/', ret, '?stream_token=own3d'])
 
 def soundcloud_dl(url, name, mode):
    # Curl part
-   buf = cStringIO.StringIO()
-   c = pycurl.Curl()
-   c.setopt(c.URL, url)
-   c.setopt(c.FOLLOWLOCATION, 1)
-   c.setopt(c.WRITEFUNCTION, buf.write)
-   c.perform()
+   print "Connecting to %s" % url
+   try:
+      buf = cStringIO.StringIO()
+      c = pycurl.Curl()
+      c.setopt(c.URL, url)
+      c.setopt(c.FOLLOWLOCATION, 1)
+      c.setopt(c.WRITEFUNCTION, buf.write)
+      c.perform()
+   except:
+      print "Error with : %s" % name
+   else:
+      print "Downloading %s" % name
+      # Write part
+      with open(name, mode) as file : file.write(buf.getvalue())
+      buf.close()
  
+print """---------------------
+Py-soundcloud
+By @atmon3r (contact.atmoner@gmail.com)
+(f0rk by fr0g)
+---------------------"""
 
-   # Write part
-   file = open(name, mode)
-   file.write(buf.getvalue())
-   file.close()
-
-   buf.close()
-   return;
- 
-print('---------------------')
-print('  Py-soundcloud  ')
-print('  By @atmon3r (contact.atmoner@gmail.com) ')
-print('---------------------')
-  
 # Basic script
-soudcloudUrl = raw_input('Soundcloud url file: ')
+if (len(sys.argv) < 2):
+   print """Usage : ./py-soundcloud.py [URL_1] [URL_2] ..."""
+   exit(1);
 
-if soudcloudUrl:
+for i in range(1, len(sys.argv)):
+   
+   try:
+      info= urlparse(sys.argv[i]).path.split("/")
+      info[2]
+   except:
+      print "Error : Bad url"
+      continue
+   else:
+      print """Artiste  : %s\nTrack   : %s""" % (info[1] , info[2])
 
-    print '....'
-    time.sleep(1)
-    print('....')
-    time.sleep(1)
-    
-    parsed = urlparse(soudcloudUrl)
-    info = parsed.path.split("/")
-    print 'Artiste  :',info[1]
-    print 'Track    :',info[2]
-    time.sleep(1)
-    
-    print('Connection established to soundcloud')
-    time.sleep(1)
-    print('Download in progress')
-    time.sleep(1)
-    print('....')
-    time.sleep(1)
-    print('....')
-    time.sleep(1)
-    url = getMp3(soudcloudUrl);
-    soundcloud_dl(url, info[2], "w+");
-    print 'Your file is download!\n' 
-else:
-    print 'Add soundcloud url!' 
+   try:
+      url = getMp3(sys.argv[i]);
+      soundcloud_dl(url, info[2], "w+");
+
+   except: print "Error : %s" % info[2]
+
+   else:      print '%s is now saved!\n' % info[2] 
+
+
